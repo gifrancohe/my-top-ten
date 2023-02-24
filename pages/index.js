@@ -1,51 +1,58 @@
 import Head from 'next/head';
+import { useState } from 'react';
+
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
+
+  const [topInput, setTopInput] = useState("");
+  const [result, setResult] = useState("");
+
+  async function onSubmit(event) {
+    event.preventDefault();
+    try {
+      const responde = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ top: topInput }),
+      });
+
+      const data = await responde.json();
+      if (responde.status !== 200) {
+        throw data.error || new Error(`Request failed with status ${response.status}`);
+      }
+
+      setResult(data.result);
+      setTopInput("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>My top list</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+      <main className={styles.main}>
+        <img src="/images/list.png" className={styles.icon} />
+        <h3>My top list</h3>
+        <form onSubmit={onSubmit}>
+          <input
+            type="text"
+            name="top"
+            placeholder="Enter a term"
+            value={topInput}
+            onChange={(e) => setTopInput(e.target.value)}
+          />
+          <input type="submit" value="Generate top" />
+        </form>
+        <div className={styles.result}>
+          {result}
         </div>
       </main>
 
@@ -66,7 +73,7 @@ export default function Home() {
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: start;
           align-items: center;
         }
         footer {
@@ -79,6 +86,7 @@ export default function Home() {
         }
         footer img {
           margin-left: 0.5rem;
+          width: 15%;
         }
         footer a {
           display: flex;
