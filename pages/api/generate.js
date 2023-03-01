@@ -56,5 +56,5 @@ export default async function (req, res) {
 function generatePrompt(top) {
   const capitalizedTop =
     top[0].toUpperCase() + top.slice(1).toLowerCase();
-  return `List top 10 ${capitalizedTop}`;
+  return `List top 20 ${capitalizedTop}`;
 }

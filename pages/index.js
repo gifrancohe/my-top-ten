@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import Button from '../pages/components/Button'
 import { useState } from 'react';
 
 import styles from '../styles/Home.module.css';
@@ -7,9 +8,17 @@ export default function Home() {
 
   const [topInput, setTopInput] = useState("");
   const [result, setResult] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function onSubmit(event) {
     event.preventDefault();
+
+    if (topInput === "") {
+      console.log("Empty input")
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const responde = await fetch("/api/generate", {
         method: "POST",
@@ -26,8 +35,10 @@ export default function Home() {
 
       setResult(data.result);
       setTopInput("");
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   };
 
@@ -49,7 +60,7 @@ export default function Home() {
             value={topInput}
             onChange={(e) => setTopInput(e.target.value)}
           />
-          <input type="submit" value="Generate top" />
+          <Button isLoading={isLoading} onClick={onSubmit}/>
         </form>
         <div className={styles.result}>
           {result}
